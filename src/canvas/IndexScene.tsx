@@ -5,10 +5,10 @@ import { getGalleries } from '../lib/content'
 import { useAppStore } from '../store/useAppStore'
 import { infiniteScroll } from '../lib/scrollController'
 import { getAverageColor } from '../lib/averageColor'
-import CoverPlane from './CoverPlane'
+import { getEffect } from './effects'
 
-const SPACING = 3.6
-const BASE_WIDTH = 3.0
+const SPACING = 3.2
+const BASE_WIDTH = 2.6
 
 // Frontpage: an infinite horizontal carousel of gallery covers. Scroll/drag
 // moves the ring (with velocity distortion in the cover shader); whichever cover
@@ -18,7 +18,10 @@ export default function IndexScene() {
   const galleries = useMemo(() => getGalleries(), [])
   const navigate = useAppStore((s) => s.navigate)
   const setFocusSlug = useAppStore((s) => s.setFocusSlug)
+  const effectId = useAppStore((s) => s.effectId)
   const scene = useThree((s) => s.scene)
+
+  const Effect = getEffect(effectId).Component
 
   const count = galleries.length
   const totalWidth = count * SPACING
@@ -92,8 +95,9 @@ export default function IndexScene() {
   return (
     <group>
       {galleries.map((g, i) => (
-        <CoverPlane
-          key={g.slug}
+        <Effect
+          // include effectId so switching cleanly remounts each cover
+          key={`${effectId}-${g.slug}`}
           url={g.cover.src}
           index={i}
           count={count}

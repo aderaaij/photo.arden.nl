@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getGalleries } from '../lib/content'
 import { useAppStore } from '../store/useAppStore'
+import EffectSwitcher from '../components/EffectSwitcher'
 
 export default function IndexPage() {
   const setView = useAppStore((s) => s.setView)
@@ -14,7 +15,9 @@ export default function IndexPage() {
   const focused = galleries.find((g) => g.slug === focusSlug) ?? galleries[0]
 
   return (
-    <header className="index-ui">
+    <>
+      <EffectSwitcher />
+      <header className="index-ui">
       <div className="index-top">
         <span className="brand">arden</span>
         <span className="site-sub">photography</span>
@@ -35,6 +38,7 @@ export default function IndexPage() {
           </Link>
         ))}
       </nav>
-    </header>
+      </header>
+    </>
   )
 }

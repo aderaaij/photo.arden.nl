@@ -17,8 +17,8 @@ vec2 coverUv(vec2 uv) {
   return (uv - 0.5) * r + 0.5;
 }
 
-// The crisp image. It only shows near focus; the particle cloud (points.*)
-// handles everything before that, then crossfades into this.
+// The original scroll look: clean image with chromatic aberration that grows
+// with scroll speed, off-center covers dimmed. The bend lives in cover.vert.
 void main() {
   vec2 uv = coverUv(vUv);
 
@@ -29,6 +29,8 @@ void main() {
   float g = texture2D(uTexture, uv).g;
   float b = texture2D(uTexture, uv - ca).b;
 
-  float alpha = smoothstep(0.7, 0.95, uFocus);
-  gl_FragColor = vec4(vec3(r, g, b), alpha);
+  vec3 col = vec3(r, g, b);
+  col *= mix(0.45, 1.0, uFocus);
+
+  gl_FragColor = vec4(col, 1.0);
 }
