@@ -31,7 +31,7 @@ export function useCoverFrame(
       wrapped,
       focus,
       shift: THREE.MathUtils.clamp(wrapped / spacing, -1, 1),
-      velocity: THREE.MathUtils.clamp(infiniteScroll.velocity, -0.4, 0.4),
+      velocity: THREE.MathUtils.clamp(infiniteScroll.smoothVelocity, -0.5, 0.5),
     })
   })
 }

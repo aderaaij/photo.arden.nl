@@ -15,6 +15,7 @@
     "@react-three/postprocessing": "^2.16.3",
     "gsap": "^3.12.5",
     "lenis": "^1.1.18",
+    "leva": "^0.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",

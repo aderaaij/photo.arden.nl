@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getGalleries } from '../lib/content'
+import { Leva } from 'leva'
 import { useAppStore } from '../store/useAppStore'
 import EffectSwitcher from '../components/EffectSwitcher'
+import TuningPanel from '../components/TuningPanel'
 
 export default function IndexPage() {
   const setView = useAppStore((s) => s.setView)
@@ -17,6 +19,12 @@ export default function IndexPage() {
   return (
     <>
       <EffectSwitcher />
+      {import.meta.env.DEV && (
+        <>
+          <Leva titleBar={{ title: 'Tuning' }} />
+          <TuningPanel />
+        </>
+      )}
       <header className="index-ui">
       <div className="index-top">
         <span className="brand">arden</span>

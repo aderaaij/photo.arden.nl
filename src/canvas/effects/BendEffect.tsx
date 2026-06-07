@@ -5,6 +5,7 @@ import fragmentShader from '../../shaders/bend.frag'
 import { useCoverTexture } from './useCoverTexture'
 import { useCoverFrame } from './useCoverFrame'
 import { COVER_ASPECT, DEFAULT_BASE_WIDTH } from './constants'
+import { tuning } from '../../lib/tuning'
 import type { CoverEffectProps } from './types'
 
 // Velocity bend + chromatic aberration on a single 2:3 plane — the original look.
@@ -29,6 +30,10 @@ export default function BendEffect({
       uFocus: { value: 0 },
       uPlaneAspect: { value: COVER_ASPECT },
       uImageAspect: { value: imageAspect },
+      uBillow: { value: tuning.billow },
+      uBow: { value: tuning.bow },
+      uAberration: { value: tuning.aberration },
+      uDim: { value: tuning.dim },
     }),
     [texture, imageAspect],
   )
@@ -36,6 +41,10 @@ export default function BendEffect({
   useCoverFrame(group, index, count, spacing, (s) => {
     uniforms.uFocus.value = s.focus
     uniforms.uVelocity.value = s.velocity
+    uniforms.uBillow.value = tuning.billow
+    uniforms.uBow.value = tuning.bow
+    uniforms.uAberration.value = tuning.aberration
+    uniforms.uDim.value = tuning.dim
   })
 
   return (

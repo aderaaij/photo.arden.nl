@@ -5,6 +5,7 @@ uniform float uVelocity;    // signed scroll velocity
 uniform float uFocus;       // 0 = at the edge, 1 = dead center
 uniform float uPlaneAspect; // plane width / height (fixed 2:3)
 uniform float uImageAspect; // source image width / height
+uniform float uAberration;  // chromatic aberration gain
 
 varying vec2 vUv;
 
@@ -22,7 +23,7 @@ vec2 coverUv(vec2 uv) {
 void main() {
   vec2 uv = coverUv(vUv);
 
-  float amt = clamp(abs(uVelocity) * 0.6, 0.0, 0.04);
+  float amt = clamp(abs(uVelocity) * uAberration, 0.0, 0.06);
   vec2 ca = vec2(sign(uVelocity), 0.0) * amt;
 
   float r = texture2D(uTexture, uv + ca).r;

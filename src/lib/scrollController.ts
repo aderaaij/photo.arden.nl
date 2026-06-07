@@ -11,8 +11,11 @@ class InfiniteScroll {
   target = 0
   /** Smoothed current position. */
   current = 0
-  /** Signed per-frame delta of `current` — drives the distortion shader. */
+  /** Signed per-frame delta of `current`. */
   velocity = 0
+  /** Low-pass-filtered velocity — what effects read, so the bend sustains
+   *  through a scroll instead of flickering for a single frame. */
+  smoothVelocity = 0
 
   /** Max pointer travel during the current press (px) — used to reject drags as clicks. */
   dragDistance = 0
@@ -20,11 +23,11 @@ class InfiniteScroll {
   /** If > 0, magnetically settle to multiples of this (set to cover spacing). */
   snapStep = 0
 
-  // tuning
-  private wheelFactor = 0.0024
-  private dragFactor = 0.0065
-  private ease = 0.09
-  private snapStrength = 0.1
+  // tuning (public so the leva panel can drive them live)
+  wheelFactor = 0.0024
+  dragFactor = 0.0065
+  ease = 0.09
+  snapStrength = 0.1
 
   private last = 0
   private isDown = false
@@ -68,6 +71,8 @@ class InfiniteScroll {
     this.current += (this.target - this.current) * this.ease
     this.velocity = this.current - this.last
     this.last = this.current
+    // Smooth toward the live velocity; ramps up over a few frames and decays out.
+    this.smoothVelocity += (this.velocity - this.smoothVelocity) * 0.2
   }
 
   private onWheel = (e: WheelEvent) => {

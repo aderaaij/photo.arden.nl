@@ -183,7 +183,7 @@ html.lenis body {
 .fx-switcher {
   position: fixed;
   top: clamp(0.75rem, 2vw, 1.25rem);
-  right: clamp(0.75rem, 2vw, 1.25rem);
+  left: clamp(0.75rem, 2vw, 1.25rem);
   z-index: 5;
   pointer-events: auto;
   display: flex;

@@ -8,6 +8,7 @@ import pointsFrag from '../../shaders/points.frag'
 import { useCoverTexture } from './useCoverTexture'
 import { useCoverFrame } from './useCoverFrame'
 import { COVER_ASPECT, DEFAULT_BASE_WIDTH } from './constants'
+import { tuning } from '../../lib/tuning'
 import type { CoverEffectProps } from './types'
 
 // Particle grid resolution (ROWS = COLS / COVER_ASPECT keeps points square).
@@ -44,6 +45,11 @@ export default function ParticlesEffect({
       uImageAspect: { value: imageAspect },
       uPointSize: { value: (width / COLS) * OVERLAP },
       uScale: { value: 1 },
+      uBillow: { value: tuning.billow },
+      uBow: { value: tuning.bow },
+      uFlyDist: { value: tuning.flyDist },
+      uFlyVel: { value: tuning.flyVel },
+      uAberration: { value: tuning.aberration },
     }),
     [texture, imageAspect, width],
   )
@@ -83,6 +89,11 @@ export default function ParticlesEffect({
     uniforms.uFocus.value = s.focus
     uniforms.uShift.value = s.shift
     uniforms.uVelocity.value = s.velocity
+    uniforms.uBillow.value = tuning.billow
+    uniforms.uBow.value = tuning.bow
+    uniforms.uFlyDist.value = tuning.flyDist
+    uniforms.uFlyVel.value = tuning.flyVel
+    uniforms.uAberration.value = tuning.aberration
 
     // Perspective point-size scale: world units → framebuffer pixels.
     const fov = (camera as THREE.PerspectiveCamera).fov ?? 45
