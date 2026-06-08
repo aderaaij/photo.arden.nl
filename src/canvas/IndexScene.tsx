@@ -38,6 +38,24 @@ export default function IndexScene() {
     return () => infiniteScroll.detach()
   }, [])
 
+  // Arrow-key navigation: ←/→ step one cover, Enter opens the focused gallery.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        infiniteScroll.step(1)
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        infiniteScroll.step(-1)
+      } else if (e.key === 'Enter') {
+        navigate(`/g/${galleries[focusIndex.current].slug}`)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [navigate, galleries])
+
   // Own the scene background while on the homepage (SceneManager skips <color> here).
   useEffect(() => {
     scene.background = bg

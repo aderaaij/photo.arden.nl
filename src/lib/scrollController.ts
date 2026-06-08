@@ -61,6 +61,15 @@ class InfiniteScroll {
     this.target = base + Math.round((this.current - base) / totalWidth) * totalWidth
   }
 
+  /** Advance by `dir` covers (±1) — arrow-key navigation. Snap stays aligned
+   *  because we step by exactly one snapStep; infinite wrap handles the edges. */
+  step(dir: number) {
+    if (this.snapStep <= 0) return
+    // Anchor to the nearest cover first, so repeated taps mid-glide stay crisp.
+    const base = Math.round(this.target / this.snapStep) * this.snapStep
+    this.target = base + dir * this.snapStep
+  }
+
   /** Call once per frame, before reading current/velocity. */
   update() {
     // Magnetic settle once motion has mostly stopped (and not actively dragging).
