@@ -19,4 +19,10 @@ export const tuning = {
   // Particle Assemble
   flyDist: 0.6, // base distance particles fly from
   flyVel: 1.8, // extra fly distance from scroll speed
+
+  // In-frame hover parallax (focused, settled cover only): the photo pans inside
+  // the fixed frame, opposite the cursor, clipping under the edge.
+  parallax: 0.025, // pan amount as a fraction of the image (also the zoom headroom)
+  shadow: 0.1, // inner frame shadow strength on hover (0 = off)
+  shadowWidth: 0.02, // how far the inner shadow reaches in from the edge
 }

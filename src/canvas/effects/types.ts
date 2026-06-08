@@ -18,4 +18,11 @@ export interface CoverFrameState {
   shift: number
   /** clamped scroll velocity */
   velocity: number
+  /** in-frame hover parallax: texture-space pan offset (x, y) */
+  parallaxX: number
+  parallaxY: number
+  /** matching zoom-in inset so the pan has headroom under the frame edge */
+  parallaxInset: number
+  /** smoothed hover amount (0..1) — drives the inner frame shadow */
+  hoverAmount: number
 }

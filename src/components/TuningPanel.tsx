@@ -36,6 +36,14 @@ export default function TuningPanel() {
       },
       { collapsed: true },
     ),
+    Parallax: folder(
+      {
+        strength: { value: tuning.parallax, min: 0, max: 0.12, step: 0.0025 },
+        shadow: { value: tuning.shadow, min: 0, max: 1, step: 0.05 },
+        shadowWidth: { value: tuning.shadowWidth, min: 0.02, max: 0.4, step: 0.01 },
+      },
+      { collapsed: true },
+    ),
   })
 
   // Push live values into the singletons read by the render loop.
@@ -48,6 +56,9 @@ export default function TuningPanel() {
   tuning.snapDisplace = v.displace
   tuning.flyDist = v.flyDist
   tuning.flyVel = v.flyVel
+  tuning.parallax = v.strength
+  tuning.shadow = v.shadow
+  tuning.shadowWidth = v.shadowWidth
 
   infiniteScroll.ease = v.ease
   infiniteScroll.wheelFactor = v.wheel
