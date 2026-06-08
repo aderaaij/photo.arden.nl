@@ -20,10 +20,10 @@ export default function IndexPage() {
     <>
       <EffectSwitcher />
       {import.meta.env.DEV && (
-        <>
+        <div className="dev-tools">
           <Leva titleBar={{ title: 'Tuning' }} />
           <TuningPanel />
-        </>
+        </div>
       )}
       <header className="index-ui">
       <div className="index-top">

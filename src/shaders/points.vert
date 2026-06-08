@@ -33,7 +33,7 @@ void main() {
   // (vertical axis, to match the horizontal scroll).
   vec3 target = position;
   float curve = sin(aUv.y * PI); // symmetric arc, corners anchored
-  target.x += curve * uVelocity * uBillow;
+  target.x -= curve * uVelocity * uBillow;
   target.z -= curve * abs(uVelocity) * uBow;
 
   // Per-particle assemble progress: staggered, eased to decelerate into place.

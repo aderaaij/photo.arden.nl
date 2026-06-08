@@ -179,6 +179,12 @@ html.lenis body {
   pointer-events: none;
 }
 
+/* Re-enable pointer events for the dev leva panel (it inherits the overlay's
+   pointer-events: none otherwise, so its controls aren't clickable). */
+.dev-tools {
+  pointer-events: auto;
+}
+
 /* ── Effect switcher (dev/iteration tool) ──────────────────────────── */
 .fx-switcher {
   position: fixed;

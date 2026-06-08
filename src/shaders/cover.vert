@@ -14,7 +14,7 @@ void main() {
   // Symmetric arc: 0 at the top & bottom corners, 1 in the middle — so the curve
   // is mirror-symmetric (corners stay aligned) rather than a lean/tilt.
   float curve = sin(uv.y * 3.14159265);
-  pos.x += curve * uVelocity * uBillow;       // even billow toward the scroll direction
+  pos.x -= curve * uVelocity * uBillow;       // trail against the scroll direction
   pos.z -= curve * abs(uVelocity) * uBow;     // even bow back in depth
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
