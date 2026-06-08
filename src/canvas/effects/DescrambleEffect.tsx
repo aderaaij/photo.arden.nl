@@ -31,8 +31,9 @@ export default function DescrambleEffect({
       uShift: { value: 0 },
       uPlaneAspect: { value: COVER_ASPECT },
       uImageAspect: { value: imageAspect },
-      uBillow: { value: tuning.billow },
-      uBow: { value: tuning.bow },
+      // Bend/drift is exclusive to the Bend & Drift effect — keep this plane flat.
+      uBillow: { value: 0 },
+      uBow: { value: 0 },
       uBlocks: { value: tuning.blocks },
       uSteps: { value: tuning.steps },
       uDisplace: { value: tuning.snapDisplace },
@@ -46,8 +47,6 @@ export default function DescrambleEffect({
     uniforms.uFocus.value = s.focus
     uniforms.uShift.value = s.shift
     uniforms.uVelocity.value = s.velocity
-    uniforms.uBillow.value = tuning.billow
-    uniforms.uBow.value = tuning.bow
     uniforms.uBlocks.value = tuning.blocks
     uniforms.uSteps.value = tuning.steps
     uniforms.uDisplace.value = tuning.snapDisplace

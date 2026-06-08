@@ -45,8 +45,9 @@ export default function ParticlesEffect({
       uImageAspect: { value: imageAspect },
       uPointSize: { value: (width / COLS) * OVERLAP },
       uScale: { value: 1 },
-      uBillow: { value: tuning.billow },
-      uBow: { value: tuning.bow },
+      // Bend/drift is exclusive to the Bend & Drift effect — no velocity arc here.
+      uBillow: { value: 0 },
+      uBow: { value: 0 },
       uFlyDist: { value: tuning.flyDist },
       uFlyVel: { value: tuning.flyVel },
       uAberration: { value: tuning.aberration },
@@ -89,8 +90,6 @@ export default function ParticlesEffect({
     uniforms.uFocus.value = s.focus
     uniforms.uShift.value = s.shift
     uniforms.uVelocity.value = s.velocity
-    uniforms.uBillow.value = tuning.billow
-    uniforms.uBow.value = tuning.bow
     uniforms.uFlyDist.value = tuning.flyDist
     uniforms.uFlyVel.value = tuning.flyVel
     uniforms.uAberration.value = tuning.aberration
