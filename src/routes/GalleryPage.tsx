@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { Leva } from 'leva'
 import { getGallery } from '../lib/content'
 import { useAppStore } from '../store/useAppStore'
+import GalleryTuningPanel from '../components/GalleryTuningPanel'
 
 export default function GalleryPage() {
   const { slug = '' } = useParams()
@@ -41,6 +43,12 @@ export default function GalleryPage() {
 
   return (
     <>
+      {import.meta.env.DEV && (
+        <div className="dev-tools">
+          <Leva titleBar={{ title: 'Gallery' }} />
+          <GalleryTuningPanel />
+        </div>
+      )}
       <div className="gallery-ui">
         <Link to="/" className="back-link">
           ← all galleries
@@ -49,8 +57,12 @@ export default function GalleryPage() {
         {gallery.intro && <p className="gallery-intro">{gallery.intro}</p>}
       </div>
 
-      {/* Spacer drives native scroll; height scales with the number of photos. */}
-      <div style={{ height: `${gallery.photos.length * 100}vh` }} aria-hidden />
+      {/* Spacer drives native scroll; height scales with the number of photos.
+          The cascade combines some photos into rows, so this is < 100vh each. */}
+      <div
+        style={{ height: `${Math.max(200, Math.round(gallery.photos.length * 72))}vh` }}
+        aria-hidden
+      />
 
       {/* Real <img> tags, visually hidden — accessibility + a no-WebGL fallback. */}
       <ul className="sr-photos">

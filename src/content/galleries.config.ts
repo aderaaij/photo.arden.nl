@@ -1,10 +1,12 @@
-import type { GalleryTheme } from '../types'
+import type { GallerySection, GalleryTheme } from '../types'
 
 export interface GalleryMeta {
   slug: string
   title: string
   intro?: string
   theme: GalleryTheme
+  /** Optional section headers (label + the photo index they precede). */
+  sections?: GallerySection[]
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -22,6 +24,11 @@ export const galleryMeta: GalleryMeta[] = [
     title: 'Lisbon Nights',
     intro: 'Tiled streets and sodium light after midnight.',
     theme: { bg: '#0c0b10', fg: '#f1ecff', accent: '#b79cff' },
+    // Demo section headers, to feel the scroll-stroke effect between groups.
+    sections: [
+      { label: 'Lisbon Nights', before: 0 },
+      { label: 'After Midnight', before: 3 },
+    ],
   },
   {
     slug: 'coastal',

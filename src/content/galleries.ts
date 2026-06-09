@@ -47,6 +47,7 @@ function buildGallery(
   title: string,
   theme: GalleryTheme,
   intro?: string,
+  sections?: Gallery['sections'],
 ): Gallery | null {
   const entries = (bySlug.get(slug) ?? []).sort((a, b) => a.name.localeCompare(b.name))
   if (entries.length === 0) return null
@@ -61,12 +62,12 @@ function buildGallery(
     reveal: 'pixelate',
   }))
 
-  return { slug, title, intro, cover: { src: cover.url }, theme, photos }
+  return { slug, title, intro, sections, cover: { src: cover.url }, theme, photos }
 }
 
 // Configured galleries first (in config order)…
 const configured = galleryMeta
-  .map((m) => buildGallery(m.slug, m.title, m.theme, m.intro))
+  .map((m) => buildGallery(m.slug, m.title, m.theme, m.intro, m.sections))
   .filter((g): g is Gallery => g !== null)
 
 // …then any folders that have images but no config entry (default theme).
