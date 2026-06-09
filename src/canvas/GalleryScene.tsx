@@ -3,56 +3,78 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { getGallery } from '../lib/content'
 import { useAppStore } from '../store/useAppStore'
-import { layoutGallery } from '../lib/galleryLayout'
+import { domGallery } from '../lib/domGallery'
 import { galleryScroll } from '../lib/galleryScroll'
 import GalleryPhoto from './GalleryPhoto'
 import HeaderText from './HeaderText'
 
-// A gallery: photos + section headers in an asymmetric, staggered editorial
-// cascade. Page scroll (Lenis → store, 0..1) moves the whole group up through
-// the content; the layout engine decides each frame's size and position.
+// DOM-driven gallery: GalleryPage lays out invisible CSS-grid cells and
+// registers them in domGallery; this scene mounts a plane per cell and snaps
+// it to the cell's rect every frame. CSS owns layout and native (Lenis-
+// smoothed) scroll owns motion — no second easing layer here, so the planes
+// track the page 1:1 without rubber-banding.
 export default function GalleryScene({ slug }: { slug: string }) {
   const gallery = useMemo(() => getGallery(slug), [slug])
-  const group = useRef<THREE.Group>(null)
-  const lastY = useRef(0)
+  const cellsVersion = useAppStore((s) => s.cellsVersion)
+  const size = useThree((s) => s.size)
   const viewport = useThree((s) => s.viewport)
+  const factor = viewport.height / size.height // world units per CSS pixel
 
-  const layout = useMemo(
-    () => (gallery ? layoutGallery(gallery, viewport.width, viewport.height) : null),
-    [gallery, viewport.width, viewport.height],
+  // Snapshot cells + their sizes when the page (re)registers. Sizes only
+  // change on resize (which re-registers); positions are tracked per frame.
+  const cells = useMemo(
+    () =>
+      domGallery.cells.map((c) => {
+        const r = c.el.getBoundingClientRect()
+        return { ...c, w: r.width * factor, h: r.height * factor }
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [cellsVersion, factor],
   )
 
-  useFrame((_, delta) => {
-    if (!group.current || !layout) return
-    const progress = useAppStore.getState().scroll
-    const targetY = progress * layout.scrollRange
-    const y = THREE.MathUtils.damp(group.current.position.y, targetY, 4, delta)
-    group.current.position.y = y
+  const groups = useRef<(THREE.Group | null)[]>([])
+  const lastScrollY = useRef(window.scrollY)
+
+  useFrame(() => {
+    for (let i = 0; i < cells.length; i++) {
+      const g = groups.current[i]
+      if (!g) continue
+      const r = cells[i].el.getBoundingClientRect()
+      g.position.set(
+        (r.left + r.width / 2 - size.width / 2) * factor,
+        -(r.top + r.height / 2 - size.height / 2) * factor,
+        0,
+      )
+    }
 
     // Publish scroll velocity (world units / frame) for the header stroke effect.
-    galleryScroll.velocity = y - lastY.current
+    const sy = window.scrollY
+    galleryScroll.velocity = (sy - lastScrollY.current) * factor
     galleryScroll.smoothVelocity +=
       (galleryScroll.velocity - galleryScroll.smoothVelocity) * 0.2
-    lastY.current = y
+    lastScrollY.current = sy
   })
 
-  if (!gallery || !layout) return null
+  if (!gallery) return null
 
   const fg = gallery.theme.fg
 
   return (
-    <group ref={group}>
-      {layout.items.map((it) =>
-        it.type === 'header' ? (
-          <group key={it.index} position={[it.x, it.y, 0]}>
-            <HeaderText text={it.text ?? ''} width={it.width} height={it.height} color={fg} />
-          </group>
-        ) : (
-          <group key={it.index} position={[it.x, it.y, 0]}>
-            <GalleryPhoto url={it.photo!.src.src} width={it.width} height={it.height} />
-          </group>
-        ),
-      )}
-    </group>
+    <>
+      {cells.map((c, i) => (
+        <group
+          key={`${cellsVersion}:${i}`}
+          ref={(g) => {
+            groups.current[i] = g
+          }}
+        >
+          {c.kind === 'photo' ? (
+            <GalleryPhoto url={c.src!} width={c.w} height={c.h} />
+          ) : (
+            <HeaderText text={c.text ?? ''} width={c.w} height={c.h} color={fg} />
+          )}
+        </group>
+      ))}
+    </>
   )
 }

@@ -25,8 +25,12 @@ interface AppState {
   /** React Router's navigate, stashed here so code inside the R3F Canvas
    *  (which is outside the Router's React context) can navigate too. */
   navigate: (path: string) => void
+  /** Bumped whenever GalleryPage (re)registers its DOM grid cells (mount,
+   *  resize) so GalleryScene re-reads the domGallery registry. */
+  cellsVersion: number
 
   setView: (view: View, slug?: string | null) => void
+  bumpCells: () => void
   setScroll: (scroll: number) => void
   setFocusSlug: (slug: string | null) => void
   setEffectId: (id: string) => void
@@ -40,8 +44,10 @@ export const useAppStore = create<AppState>((set) => ({
   focusSlug: null,
   effectId: initialEffect(),
   navigate: () => {},
+  cellsVersion: 0,
 
   setView: (view, slug = null) => set({ view, activeSlug: slug }),
+  bumpCells: () => set((s) => ({ cellsVersion: s.cellsVersion + 1 })),
   setScroll: (scroll) => set({ scroll }),
   setFocusSlug: (slug) => set({ focusSlug: slug }),
   setEffectId: (id) => {

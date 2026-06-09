@@ -6,6 +6,10 @@ import { useAppStore } from '../store/useAppStore'
 // the Canvas can read it (via getState) without triggering React re-renders.
 export function useLenis() {
   useEffect(() => {
+    // The browser restoring scroll on reload fights Lenis + the canvas scenes
+    // (it lands mid-page once the photos finish decoding). Scroll state is
+    // ours; every route decides its own starting position.
+    history.scrollRestoration = 'manual'
     const lenis = new Lenis({ smoothWheel: true })
 
     let raf = 0

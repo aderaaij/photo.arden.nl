@@ -274,3 +274,54 @@ html.lenis body {
   border: 0;
   list-style: none;
 }
+
+/* Thin texture-loading bar along the top of a gallery */
+.gallery-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.3s;
+}
+.gallery-loader.is-loading {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+.gallery-loader span {
+  display: block;
+  height: 100%;
+  background: var(--accent, var(--fg));
+  transition: width 0.2s ease;
+}
+
+/* ── Gallery layout skeleton (invisible; WebGL planes track these cells) ── */
+.g-flow {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  padding: 14vh 0 20vh;
+}
+.g-header {
+  height: 30vh;
+  margin: 4vh 0 6vh;
+}
+.g-cluster {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 2vw;
+  row-gap: 5vh;
+  align-items: start;
+  margin: 12vh 0;
+}
+.g-cluster--tight {
+  row-gap: 2.5vh;
+}
+.g-full {
+  width: 100%;
+  height: 100vh;
+  margin: 16vh 0;
+}

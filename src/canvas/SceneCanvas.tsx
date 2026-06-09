@@ -13,6 +13,11 @@ export default function SceneCanvas() {
   return (
     <Canvas
       className="scene-canvas"
+      // linear + flat: no output sRGB encode, no tone mapping. Raw ShaderMaterials
+      // bypass those anyway; this keeps built-in materials (gallery photos on
+      // meshBasicMaterial) byte-accurate too, instead of double-encoding sRGB.
+      linear
+      flat
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: false }}
       camera={{ position: [0, 0, 6], fov: 45 }}

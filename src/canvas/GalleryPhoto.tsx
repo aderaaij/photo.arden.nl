@@ -1,10 +1,15 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 
-// A single gallery frame: a fixed-size plane (from the layout engine) with the
-// photo center-cropped (object-fit: cover) to fill it. Phase 1 is a plain
-// textured plane; the scroll-driven dissolve reveal lands in a later phase.
+// Cap the GPU-side texture size. The source photos are full-resolution camera
+// exports (4–8MP); uploading those raw costs ~50MB of VRAM each with mipmaps
+// and makes scrolling stutter. Downscaled once on arrival, a whole gallery
+// stays comfortably under a couple hundred MB.
+const MAX_TEX = 2048
+
+// A single gallery frame: a fixed-size plane (sized by its DOM grid cell) with
+// the photo center-cropped (object-fit: cover) to fill it.
 export default function GalleryPhoto({
   url,
   width,
@@ -14,12 +19,30 @@ export default function GalleryPhoto({
   width: number
   height: number
 }) {
-  const texture = useTexture(url)
-  const img = texture.image as HTMLImageElement | undefined
+  const source = useTexture(url)
+  const img = source.image as HTMLImageElement | undefined
   const imgAspect =
     img?.naturalWidth && img?.naturalHeight
       ? img.naturalWidth / img.naturalHeight
       : width / height
+
+  // Downscale oversized photos into a canvas-backed texture; small ones pass
+  // through untouched.
+  const texture = useMemo(() => {
+    if (!img || Math.max(img.naturalWidth, img.naturalHeight) <= MAX_TEX) return source
+    const scale = MAX_TEX / Math.max(img.naturalWidth, img.naturalHeight)
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.round(img.naturalWidth * scale)
+    canvas.height = Math.round(img.naturalHeight * scale)
+    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+    return new THREE.CanvasTexture(canvas)
+  }, [source, img])
+
+  // Dispose derived textures when they're swapped out.
+  useEffect(() => {
+    if (texture === source) return
+    return () => texture.dispose()
+  }, [texture, source])
 
   // Pass-through color (ColorManagement is disabled app-wide) + cover-crop via
   // the texture's repeat/offset so the image fills the frame without distortion.
