@@ -6,9 +6,10 @@ import fragmentShader from '../shaders/header.frag'
 import { headerTuning } from '../lib/headerTuning'
 
 // A section header: the label rendered to a canvas texture, mapped onto a plane,
-// cut into chunky slices that drift apart in both axes, smeared into film grain —
-// all fading in and merging together as the header scrolls to its anchor on
-// screen. Position-driven, reversible.
+// cut into vertical columns of varying width that slide vertically past each
+// other, parallax style, smeared into film grain — all fading in and gliding
+// into register as the header scrolls to its anchor on screen. Position-driven,
+// reversible.
 export default function HeaderText({
   text,
   width,
@@ -22,6 +23,7 @@ export default function HeaderText({
 }) {
   const mesh = useRef<THREE.Mesh>(null)
   const viewport = useThree((s) => s.viewport)
+  const gl = useThree((s) => s.gl)
   const worldPos = useMemo(() => new THREE.Vector3(), [])
 
   // Breathing room around the text box so scattered slices, smears and echoes
@@ -72,13 +74,12 @@ export default function HeaderText({
       uColor: { value: new THREE.Color(color) },
       uReveal: { value: 0 },
       uTravel: { value: headerTuning.travel },
-      uBlocks: { value: new THREE.Vector2(6, 6) },
-      uAspect: { value: planeH / planeW },
+      uColumns: { value: headerTuning.columns },
       uSmear: { value: headerTuning.smear },
       uGrain: { value: headerTuning.grain },
       uStagger: { value: headerTuning.stagger },
       uFadeIn: { value: headerTuning.fadeIn },
-      uWobble: { value: headerTuning.wobble },
+      uDpr: { value: 1 },
     }),
     [texture, color, planeW, planeH],
   )
@@ -99,17 +100,19 @@ export default function HeaderText({
     )
 
     // Live tuning. Travel/smear are authored as fractions of the text height,
-    // so rescale them into padded-plane UV units; slice rows likewise stay
-    // sized to the text, not the padded plane.
+    // so rescale them into padded-plane UV units; the column count likewise
+    // counts across the text width, not the padded plane.
     const inner = height / planeH
     uniforms.uTravel.value = headerTuning.travel * inner
     uniforms.uSmear.value = headerTuning.smear * inner
     uniforms.uGrain.value = headerTuning.grain
     uniforms.uStagger.value = headerTuning.stagger
     uniforms.uFadeIn.value = headerTuning.fadeIn
-    uniforms.uWobble.value = headerTuning.wobble
-    const rows = Math.max(2, Math.round(headerTuning.rows / inner))
-    uniforms.uBlocks.value.set(Math.max(2, Math.round(rows * (planeW / planeH))), rows)
+    uniforms.uDpr.value = gl.getPixelRatio()
+    uniforms.uColumns.value = Math.max(
+      2,
+      Math.round(headerTuning.columns * (planeW / width)),
+    )
   })
 
   return (

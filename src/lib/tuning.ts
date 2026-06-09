@@ -8,7 +8,7 @@ export const tuning = {
   bow: 2.4, // depth of the bow
 
   // Image look (shared)
-  aberration: 0.6, // chromatic aberration gain
+  aberration: 0.2, // chromatic aberration gain
   dim: 0.45, // how far off-center covers fade
 
   // Pixel Snap

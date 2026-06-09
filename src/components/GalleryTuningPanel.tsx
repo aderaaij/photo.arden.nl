@@ -9,8 +9,7 @@ export default function GalleryTuningPanel() {
       travel: { value: headerTuning.travel, min: 0, max: 1.5, step: 0.02 },
       smear: { value: headerTuning.smear, min: 0, max: 1, step: 0.02 },
       grain: { value: headerTuning.grain, min: 0, max: 1, step: 0.05 },
-      rows: { value: headerTuning.rows, min: 1, max: 24, step: 1 },
-      wobble: { value: headerTuning.wobble, min: 0, max: 1.5, step: 0.05 },
+      columns: { value: headerTuning.columns, min: 2, max: 48, step: 1 },
       stagger: { value: headerTuning.stagger, min: 0, max: 0.95, step: 0.05 },
       fadeIn: { value: headerTuning.fadeIn, min: 0.05, max: 1, step: 0.05 },
       reveal: { value: headerTuning.reveal, min: 0.1, max: 1, step: 0.05 },
@@ -21,8 +20,7 @@ export default function GalleryTuningPanel() {
   headerTuning.travel = v.travel
   headerTuning.smear = v.smear
   headerTuning.grain = v.grain
-  headerTuning.rows = v.rows
-  headerTuning.wobble = v.wobble
+  headerTuning.columns = v.columns
   headerTuning.stagger = v.stagger
   headerTuning.fadeIn = v.fadeIn
   headerTuning.reveal = v.reveal
