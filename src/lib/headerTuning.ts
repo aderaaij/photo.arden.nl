@@ -1,13 +1,14 @@
-// Live-tunable parameters for the section-header slice/grain reveal, mutated by
+// Live-tunable parameters for the section-header slice/smear reveal, mutated by
 // the dev GalleryTuningPanel and read each frame by HeaderText. A plain singleton
 // so the render loop reads it without re-renders.
 export const headerTuning = {
-  travel: 0.5, // max vertical slice offset (fraction of box height)
-  grain: 0, // master grain amount: 0 = clean slices; >0 fades in the pixel grain (parked)
-  fine: 220, // grain grid resolution (cells across the header)
-  dot: 0.32, // particle fill within its cell (smaller = more gap = finer dust)
+  travel: 0.45, // max slice offset while scattered (box-height fraction, both axes)
+  smear: 0.3, // grainy directional blur length along each slice's slide
+  grain: 0.5, // grain dropout inside the smear while scattered
   rows: 6, // slice chunkiness (block rows)
-  stagger: 0.5, // how staggered the slices click into place
+  wobble: 0, // slice-cut waviness: 0 = straight cuts, 1 = hand-torn
+  stagger: 0.5, // how staggered the slices merge into place
+  fadeIn: 0.45, // portion of the reveal spent fading up from nothing
   reveal: 0.5, // reveal distance as a fraction of viewport height
-  anchor: 0.08, // where the header clicks into place (fraction above center)
+  anchor: 0.08, // where the header merges into place (fraction above center)
 }

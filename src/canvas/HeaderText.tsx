@@ -6,8 +6,9 @@ import fragmentShader from '../shaders/header.frag'
 import { headerTuning } from '../lib/headerTuning'
 
 // A section header: the label rendered to a canvas texture, mapped onto a plane,
-// sliced into chunky blocks that each click into place (with a grain dissolve) as
-// the header scrolls to its anchor on screen — position-driven, reversible.
+// cut into chunky slices that drift apart in both axes, smeared into film grain —
+// all fading in and merging together as the header scrolls to its anchor on
+// screen. Position-driven, reversible.
 export default function HeaderText({
   text,
   width,
@@ -23,10 +24,16 @@ export default function HeaderText({
   const viewport = useThree((s) => s.viewport)
   const worldPos = useMemo(() => new THREE.Vector3(), [])
 
+  // Breathing room around the text box so scattered slices, smears and echoes
+  // drift past the type's bounds instead of clipping at the plane's edge.
+  const pad = height
+  const planeW = width + pad * 2
+  const planeH = height + pad * 2
+
   const texture = useMemo(() => {
-    const PX = 1024
-    const cw = PX
-    const ch = Math.max(1, Math.round(PX * (height / width)))
+    // Scale the canvas up with the padding so glyph resolution doesn't drop.
+    const cw = Math.min(2048, Math.round(1024 * (planeW / width)))
+    const ch = Math.max(1, Math.round(cw * (planeH / planeW)))
     const canvas = document.createElement('canvas')
     canvas.width = cw
     canvas.height = ch
@@ -36,10 +43,10 @@ export default function HeaderText({
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
-    let fontSize = ch * 0.62
+    let fontSize = ch * 0.62 * (height / planeH)
     const family = "900 {S}px 'Fraunces', Georgia, 'Times New Roman', serif"
     ctx.font = family.replace('{S}', String(fontSize))
-    const maxW = cw * 0.94
+    const maxW = cw * 0.94 * (width / planeW)
     const measured = ctx.measureText(text).width
     if (measured > maxW) {
       fontSize *= maxW / measured
@@ -55,7 +62,7 @@ export default function HeaderText({
     tex.magFilter = THREE.LinearFilter
     tex.needsUpdate = true
     return tex
-  }, [text, width, height])
+  }, [text, width, height, planeW, planeH])
 
   useEffect(() => () => texture.dispose(), [texture])
 
@@ -66,12 +73,14 @@ export default function HeaderText({
       uReveal: { value: 0 },
       uTravel: { value: headerTuning.travel },
       uBlocks: { value: new THREE.Vector2(6, 6) },
-      uFade: { value: headerTuning.grain },
-      uPixel: { value: new THREE.Vector2(220, 64) },
+      uAspect: { value: planeH / planeW },
+      uSmear: { value: headerTuning.smear },
+      uGrain: { value: headerTuning.grain },
       uStagger: { value: headerTuning.stagger },
-      uDot: { value: headerTuning.dot },
+      uFadeIn: { value: headerTuning.fadeIn },
+      uWobble: { value: headerTuning.wobble },
     }),
-    [texture, color],
+    [texture, color, planeW, planeH],
   )
 
   useFrame(() => {
@@ -89,20 +98,23 @@ export default function HeaderText({
       1,
     )
 
-    // Live tuning.
-    uniforms.uTravel.value = headerTuning.travel
-    uniforms.uFade.value = headerTuning.grain
+    // Live tuning. Travel/smear are authored as fractions of the text height,
+    // so rescale them into padded-plane UV units; slice rows likewise stay
+    // sized to the text, not the padded plane.
+    const inner = height / planeH
+    uniforms.uTravel.value = headerTuning.travel * inner
+    uniforms.uSmear.value = headerTuning.smear * inner
+    uniforms.uGrain.value = headerTuning.grain
     uniforms.uStagger.value = headerTuning.stagger
-    uniforms.uDot.value = headerTuning.dot
-    const rows = headerTuning.rows
-    uniforms.uBlocks.value.set(Math.max(2, Math.round(rows * (width / height))), rows)
-    const px = headerTuning.fine
-    uniforms.uPixel.value.set(px, Math.max(2, Math.round(px * (height / width))))
+    uniforms.uFadeIn.value = headerTuning.fadeIn
+    uniforms.uWobble.value = headerTuning.wobble
+    const rows = Math.max(2, Math.round(headerTuning.rows / inner))
+    uniforms.uBlocks.value.set(Math.max(2, Math.round(rows * (planeW / planeH))), rows)
   })
 
   return (
     <mesh ref={mesh}>
-      <planeGeometry args={[width, height, 1, 1]} />
+      <planeGeometry args={[planeW, planeH, 1, 1]} />
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
