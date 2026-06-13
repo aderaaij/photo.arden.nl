@@ -281,8 +281,11 @@ export function buildGalleryBlocks(gallery: Gallery): { blocks: GalleryBlock[]; 
   const blocks: GalleryBlock[] = []
   const flat: FlatCell[] = []
 
+  // Tagged onto each photo so the canvas knows which chapter it belongs to —
+  // drives per-chapter lazy loading (a chapter loads when its route map nears).
+  let currentSection = 0
   const push: PushPhoto = (photo) => {
-    flat.push({ kind: 'photo', src: photo.src.src, alt: photo.alt })
+    flat.push({ kind: 'photo', src: photo.src.src, alt: photo.alt, section: currentSection })
     return flat.length - 1
   }
   const pushHeader = (text: string, section: number): number => {
@@ -298,6 +301,7 @@ export function buildGalleryBlocks(gallery: Gallery): { blocks: GalleryBlock[]; 
   if (secs[0].before !== 0) secs.unshift({ label: gallery.title, before: 0 })
 
   for (let s = 0; s < secs.length; s++) {
+    currentSection = s
     const sec = secs[s]
     const start = sec.before
     const end = s + 1 < secs.length ? secs[s + 1].before : photos.length

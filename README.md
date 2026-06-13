@@ -233,12 +233,71 @@ src/
   lib/content.ts                ← the content API (swap for a CMS later)
   lib/domGallery.ts             ← layout engine (auto + layout.json)
   lib/palette.ts                ← live scroll-driven color
-  canvas/GalleryScene.tsx       ← per-cell planes + palette crossfade
-  canvas/GalleryPhoto.tsx       ← cover-cropped photo plane
+  lib/textureQueue.ts           ← frame-budgeted GPU texture uploads
+  hooks/useInView.ts            ← IntersectionObserver gate (lazy loading)
+  canvas/GalleryScene.tsx       ← per-cell planes, palette crossfade, lazy loading
+  canvas/GalleryPhoto.tsx       ← cover-cropped photo plane (lazy + fade-in)
   canvas/TripMap.tsx            ← animated route map
   canvas/HeaderText.tsx         ← scroll-driven slice-reveal headers
   photos/<slug>/[NN-chapter/]   ← your photos (+ optional layout.json, cover.*)
 ```
+
+---
+
+## Performance — lazy loading & scroll smoothness
+
+The gallery streams in as you scroll instead of loading up front, and the scroll
+holds 60fps by paying one-time GPU costs **off** the critical path. Three
+mechanisms (`GalleryScene.tsx`, `GalleryPhoto.tsx`, `lib/textureQueue.ts`):
+
+1. **Per-chapter loading (trip galleries).** Each chapter opens on its route map
+   (~2.5 viewports of sticky scroll). An `IntersectionObserver` watches those map
+   cells; as a chapter's map nears, that chapter's photos are cleared to load —
+   so a chapter decodes during its map intro and is ready before its first photo.
+   Chapter 0's map sits at the top, so it loads on arrival. Flat galleries (no
+   maps) fall back to **per-photo** observation (`hooks/useInView.ts`).
+2. **Spread GPU uploads.** Three uploads a texture on the frame its plane is
+   first drawn — a ~2560px upload that hitches the scroll. Instead each decoded
+   photo is `img.decode()`'d off-thread, then queued (`lib/textureQueue.ts`); the
+   render loop uploads a couple per frame via `renderer.initTexture`, ahead of
+   view, so a photo is already resident when it scrolls in.
+3. **Staggered mounting.** Arming a chapter flips all 9–12 of its photos to load
+   in one React tick — their Suspense boundaries resolve into a single
+   ~half-second synchronous commit (a visible hitch). A frame-budgeted cursor
+   mounts them **one per frame** instead. The cursor is held while parked at the
+   top, so the opening map's assembly animation isn't stuttered by photos
+   mounting behind it; the first scroll releases it.
+
+### Tuning knobs
+
+| constant | file | what |
+| --- | --- | --- |
+| `CHAPTER_PRELOAD_MARGIN` | `GalleryScene.tsx` | how near a chapter's map must scroll before its photos load (IO `rootMargin`) |
+| `MOUNT_STEP` | `GalleryScene.tsx` | photos mounted per frame once a chapter is armed (`1` = smoothest, slower ramp) |
+| `PRELOAD_MARGIN` | `GalleryPhoto.tsx` | flat-gallery per-photo load lead (IO `rootMargin`) |
+| `MAX_TEX` | `GalleryPhoto.tsx` | GPU texture-size cap (matched to the 2560 pipeline) |
+| `drainUploads(gl, max)` | `lib/textureQueue.ts` | textures uploaded per frame (default `2`) |
+
+### Profiling notes
+
+Discoveries worth keeping, for when you revisit this:
+
+- First-view jank is **one-time GPU cost**, not recurring — scroll a region
+  twice and pass 2 is flawless (everything's resident). The two costs are the
+  per-photo **texture upload** and the per-chapter **mount commit**, confirmed
+  via Chrome's Long Animation Frames API (`long-animation-frame` entries pin the
+  spike to `MessagePort.onmessage` → React scheduler, with `renderMs ≈ 0` — it's
+  reconciliation, not rendering).
+- Steady-state scroll is already 60fps; the per-frame `getBoundingClientRect`
+  reads are cheap (~0.2ms for ~60 cells), but a palette-crossfade `--bg` write
+  forces a ~1.5ms reflow on any rect read after it in the same frame — keep DOM
+  reads before writes in the frame loop.
+- **Profiling needs the Chrome window focused** — `requestAnimationFrame` pauses
+  for hidden/occluded windows, so rAF-driven probes (frame timing, programmatic
+  scroll) just stall. (Same reason R3F won't boot when occluded.)
+- Dev image URLs are `/@imagetools/<hash>`; byte-identical files (e.g. repeated
+  `placeholder-*.jpg`) share a hash, so distinct-load counts under-count when a
+  gallery reuses placeholders.
 
 ---
 
@@ -248,9 +307,6 @@ src/
   proper linear workflow before launch — color fidelity matters for the photos.
 - **WebGL transition** (`Transition.tsx`): a DOM curtain placeholder; replace
   with a shader/camera transition on the persistent Canvas.
-- **Lazy texture loading**: the whole scene's textures currently load up front
-  (~37 MB for a large chapter at 2560). Load per-cell on scroll if first-load
-  speed matters.
 - **Placeholders**: Otaru and Hiroshima ship with `placeholder-*.jpg`; swap in
   real photos, then `pnpm palettes` + drop their `theme:` lines.
 - **Mobile strategy**: decide lighter effects vs. a static grid below a

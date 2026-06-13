@@ -7,9 +7,10 @@ import { useAppStore } from '../store/useAppStore'
 import { buildGalleryBlocks, domGallery } from '../lib/domGallery'
 import GalleryTuningPanel from '../components/GalleryTuningPanel'
 
-// Thin loading bar while the gallery's textures stream in (useProgress taps
-// three's DefaultLoadingManager, so it works out here in DOM-land). The whole
-// scene sits behind one Suspense boundary, so this is the only feedback.
+// Thin loading bar while textures stream in (useProgress taps three's
+// DefaultLoadingManager, so it works out here in DOM-land). Frames now load
+// lazily per cell, so this reads the first screenful on entry and flickers back
+// as later frames stream in on scroll — ambient feedback, not a hard gate.
 function GalleryLoader() {
   const { active, progress } = useProgress()
   return (
