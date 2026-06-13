@@ -157,12 +157,22 @@ function fullBlock(p: Photo, push: PushPhoto): GalleryBlock {
 }
 
 /** Procedural magazine layout for one section's photos. `opener` makes the
- *  first photo a hero (true for a section's start, false for appended leftovers). */
+ *  first photo a hero (true for a section's start, false for appended leftovers).
+ *  Consecutive landscapes/squares are gathered into justified rows of 2–3
+ *  (magazine clusters, à la monokai.nl/2019/japan), with the occasional big
+ *  single for breathing room; portraits stand alone or pair with a neighbour. */
 function autoLayout(photos: Photo[], push: PushPhoto, rng: () => number, opener = true): GalleryBlock[] {
   const blocks: GalleryBlock[] = []
   let i = 0
   let groupStart = opener
   let untilFull = nextFullInterval(rng)
+  // How many consecutive non-portrait photos start at `from` (a row can cluster
+  // these without cropping, since rowBlock justifies them to a shared height).
+  const wideRun = (from: number): number => {
+    let n = 0
+    while (from + n < photos.length && orientOf(photos[from + n]) !== 'p') n++
+    return n
+  }
   while (i < photos.length) {
     const p = photos[i]
     const o = orientOf(p)
@@ -181,17 +191,37 @@ function autoLayout(photos: Photo[], push: PushPhoto, rng: () => number, opener 
       continue
     }
     if (untilFull > 0) untilFull--
+
     const r = rng()
-    const next = i + 1 < photos.length ? photos[i + 1] : null
-    if (next && r < 0.42) {
-      blocks.push(rowBlock([p, next], push))
-      i += 2
-    } else if (r < 0.72) {
-      blocks.push(singleBlock(p, 'center', push))
-      i++
+    if (o === 'p') {
+      // Portrait: pair with the next photo, or stand alone.
+      const next = i + 1 < photos.length ? photos[i + 1] : null
+      if (next && r < 0.5) {
+        blocks.push(rowBlock([p, next], push))
+        i += 2
+      } else if (r < 0.8) {
+        blocks.push(singleBlock(p, 'center', push))
+        i++
+      } else {
+        blocks.push(singleBlock(p, rng() < 0.5 ? 'right' : 'left', push))
+        i++
+      }
     } else {
-      blocks.push(singleBlock(p, rng() < 0.5 ? 'right' : 'left', push))
-      i++
+      // Landscape/square: prefer clustering runs into rows of 3 or 2.
+      const run = wideRun(i)
+      if (run >= 3 && r < 0.45) {
+        blocks.push(rowBlock(photos.slice(i, i + 3), push))
+        i += 3
+      } else if (run >= 2 && r < 0.75) {
+        blocks.push(rowBlock(photos.slice(i, i + 2), push))
+        i += 2
+      } else if (r < 0.9) {
+        blocks.push(singleBlock(p, 'center', push))
+        i++
+      } else {
+        blocks.push(singleBlock(p, rng() < 0.5 ? 'right' : 'left', push))
+        i++
+      }
     }
   }
   return blocks

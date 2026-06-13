@@ -2,11 +2,11 @@ import { useEffect, useMemo } from 'react'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 
-// Cap the GPU-side texture size. The source photos are full-resolution camera
-// exports (4–8MP); uploading those raw costs ~50MB of VRAM each with mipmaps
-// and makes scrolling stutter. Downscaled once on arrival, a whole gallery
-// stays comfortably under a couple hundred MB.
-const MAX_TEX = 2048
+// Cap the GPU-side texture size. The served WebP is already long-edge ≤2560
+// (see galleries.ts); this matches it, so the crisp 2560 frames upload as-is
+// and anything larger (e.g. a hand-dropped original) is downscaled on arrival
+// rather than costing ~50MB of VRAM each.
+const MAX_TEX = 2560
 
 // A single gallery frame: a fixed-size plane (sized by its DOM grid cell) with
 // the photo center-cropped (object-fit: cover) to fill it.

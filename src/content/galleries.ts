@@ -38,15 +38,17 @@ function derivedTheme(key: string): GalleryTheme | undefined {
 // landscape frame, or vice versa) with zero extra build step.
 // (Options must be static literals — Vite can't resolve a shared const here.)
 type ImgMeta = { src: string; width: number; height: number }
+// w+h+fit:inside caps the LONG edge at 2560 (so a portrait is ~1707×2560, not
+// 2560×3840) — crisp on retina/full-screen without over-serving. Never upscales.
 const rootFiles = import.meta.glob('../photos/*/*.{jpg,jpeg,png,webp,avif}', {
   eager: true,
   import: 'default',
-  query: { w: '1920', format: 'webp', quality: '80', as: 'metadata' },
+  query: { w: '2560', h: '2560', fit: 'inside', format: 'webp', quality: '80', as: 'metadata' },
 }) as Record<string, ImgMeta>
 const chapterFiles = import.meta.glob('../photos/*/*/*.{jpg,jpeg,png,webp,avif}', {
   eager: true,
   import: 'default',
-  query: { w: '1920', format: 'webp', quality: '80', as: 'metadata' },
+  query: { w: '2560', h: '2560', fit: 'inside', format: 'webp', quality: '80', as: 'metadata' },
 }) as Record<string, ImgMeta>
 
 // Optional `layout.json` sidecars for hand-authored art direction: at a chapter
