@@ -306,7 +306,7 @@ html.lenis body {
   padding: 14vh 0 20vh;
 }
 .g-header {
-  height: 30vh;
+  height: 48vh;
   margin: 4vh 0 6vh;
 }
 .g-cluster {
@@ -324,4 +324,21 @@ html.lenis body {
   width: 100%;
   height: 100vh;
   margin: 16vh 0;
+}
+/* Trip route map: tall wrapper scrolls, inner cell pins for the extra height
+   while the WebGL map draws the route. */
+.g-map-wrap {
+  height: 185vh;
+  margin: 0;
+}
+/* The opening map fills the first viewport exactly (cancels .g-flow's top
+   padding) and pins shorter — its show plays on mount, not on scroll. */
+.g-flow > .g-map-wrap:first-child {
+  height: 170vh;
+  margin-top: -14vh;
+}
+.g-map {
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }

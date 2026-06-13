@@ -1,0 +1,354 @@
+{
+  "coastal": {
+    "bg": "#285380",
+    "fg": "#ebedef",
+    "accent": "#6198c7",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#1b3448",
+        "frac": 0.25
+      },
+      {
+        "hex": "#274c74",
+        "frac": 0.25
+      },
+      {
+        "hex": "#345273",
+        "frac": 0.125
+      },
+      {
+        "hex": "#346793",
+        "frac": 0.125
+      },
+      {
+        "hex": "#465e8b",
+        "frac": 0.125
+      },
+      {
+        "hex": "#987f84",
+        "frac": 0.125
+      }
+    ]
+  },
+  "japan/tokyo": {
+    "bg": "#267978",
+    "fg": "#ebefef",
+    "accent": "#c48364",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#192121",
+        "frac": 0.25
+      },
+      {
+        "hex": "#0d3333",
+        "frac": 0.25
+      },
+      {
+        "hex": "#1d201f",
+        "frac": 0.125
+      },
+      {
+        "hex": "#523720",
+        "frac": 0.125
+      },
+      {
+        "hex": "#47534a",
+        "frac": 0.125
+      },
+      {
+        "hex": "#be8a71",
+        "frac": 0.125
+      }
+    ]
+  },
+  "japan/sapporo": {
+    "bg": "#337156",
+    "fg": "#ebefed",
+    "accent": "#c49064",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#09211b",
+        "frac": 0.25
+      },
+      {
+        "hex": "#274438",
+        "frac": 0.25
+      },
+      {
+        "hex": "#555b45",
+        "frac": 0.125
+      },
+      {
+        "hex": "#8f6440",
+        "frac": 0.125
+      },
+      {
+        "hex": "#7c806a",
+        "frac": 0.125
+      },
+      {
+        "hex": "#c0ae89",
+        "frac": 0.125
+      }
+    ]
+  },
+  "japan/otaru": {
+    "bg": "#267679",
+    "fg": "#ebefef",
+    "accent": "#c48264",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#182323",
+        "frac": 0.25
+      },
+      {
+        "hex": "#102e2f",
+        "frac": 0.25
+      },
+      {
+        "hex": "#1b201f",
+        "frac": 0.125
+      },
+      {
+        "hex": "#34281f",
+        "frac": 0.125
+      },
+      {
+        "hex": "#414840",
+        "frac": 0.125
+      },
+      {
+        "hex": "#bf866b",
+        "frac": 0.125
+      }
+    ]
+  },
+  "japan/fukuoka": {
+    "bg": "#7f4728",
+    "fg": "#efedeb",
+    "accent": "#e27d45",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#0e1b11",
+        "frac": 0.25
+      },
+      {
+        "hex": "#102820",
+        "frac": 0.25
+      },
+      {
+        "hex": "#222d1c",
+        "frac": 0.125
+      },
+      {
+        "hex": "#7a3713",
+        "frac": 0.125
+      },
+      {
+        "hex": "#38503f",
+        "frac": 0.125
+      },
+      {
+        "hex": "#9c9277",
+        "frac": 0.125
+      }
+    ]
+  },
+  "japan/nagasaki": {
+    "bg": "#e7d9d1",
+    "fg": "#26201d",
+    "accent": "#aa6841",
+    "polarity": "light",
+    "ranked": [
+      {
+        "hex": "#1a1d14",
+        "frac": 0.25
+      },
+      {
+        "hex": "#444c46",
+        "frac": 0.25
+      },
+      {
+        "hex": "#835c45",
+        "frac": 0.125
+      },
+      {
+        "hex": "#8c7769",
+        "frac": 0.125
+      },
+      {
+        "hex": "#b29e85",
+        "frac": 0.125
+      },
+      {
+        "hex": "#cbc9c3",
+        "frac": 0.125
+      }
+    ]
+  },
+  "japan/hiroshima": {
+    "bg": "#267679",
+    "fg": "#ebefef",
+    "accent": "#c48264",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#1a1e1e",
+        "frac": 0.25
+      },
+      {
+        "hex": "#112d2e",
+        "frac": 0.25
+      },
+      {
+        "hex": "#262921",
+        "frac": 0.125
+      },
+      {
+        "hex": "#693d20",
+        "frac": 0.125
+      },
+      {
+        "hex": "#4a554c",
+        "frac": 0.125
+      },
+      {
+        "hex": "#bb8871",
+        "frac": 0.125
+      }
+    ]
+  },
+  "lisbon-nights": {
+    "bg": "#4e2880",
+    "fg": "#edebef",
+    "accent": "#a163c5",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#2f203b",
+        "frac": 0.25
+      },
+      {
+        "hex": "#482971",
+        "frac": 0.25
+      },
+      {
+        "hex": "#682e6a",
+        "frac": 0.125
+      },
+      {
+        "hex": "#6b348c",
+        "frac": 0.125
+      },
+      {
+        "hex": "#7d4d74",
+        "frac": 0.125
+      },
+      {
+        "hex": "#854e9b",
+        "frac": 0.125
+      }
+    ]
+  },
+  "portraits": {
+    "bg": "#825829",
+    "fg": "#efedeb",
+    "accent": "#c79761",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#626129",
+        "frac": 0.25
+      },
+      {
+        "hex": "#875e30",
+        "frac": 0.25
+      },
+      {
+        "hex": "#3e3317",
+        "frac": 0.125
+      },
+      {
+        "hex": "#5d3d21",
+        "frac": 0.125
+      },
+      {
+        "hex": "#7e8437",
+        "frac": 0.125
+      },
+      {
+        "hex": "#998b47",
+        "frac": 0.125
+      }
+    ]
+  },
+  "senso-ji": {
+    "bg": "#267978",
+    "fg": "#ebefef",
+    "accent": "#c48364",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#192121",
+        "frac": 0.25
+      },
+      {
+        "hex": "#0d3332",
+        "frac": 0.25
+      },
+      {
+        "hex": "#1d201f",
+        "frac": 0.125
+      },
+      {
+        "hex": "#523720",
+        "frac": 0.125
+      },
+      {
+        "hex": "#47544b",
+        "frac": 0.125
+      },
+      {
+        "hex": "#be8b73",
+        "frac": 0.125
+      }
+    ]
+  },
+  "yokohama": {
+    "bg": "#265577",
+    "fg": "#ebedef",
+    "accent": "#c48d64",
+    "polarity": "dark",
+    "ranked": [
+      {
+        "hex": "#050513",
+        "frac": 0.25
+      },
+      {
+        "hex": "#081722",
+        "frac": 0.25
+      },
+      {
+        "hex": "#222321",
+        "frac": 0.125
+      },
+      {
+        "hex": "#253e44",
+        "frac": 0.125
+      },
+      {
+        "hex": "#6c492f",
+        "frac": 0.125
+      },
+      {
+        "hex": "#79697a",
+        "frac": 0.125
+      }
+    ]
+  }
+}

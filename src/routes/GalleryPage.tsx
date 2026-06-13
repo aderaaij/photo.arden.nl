@@ -116,7 +116,14 @@ export default function GalleryPage() {
           height comes from this content — no spacer math. */}
       <div className="g-flow" aria-hidden>
         {built.blocks.map((block, bi) =>
-          block.type === 'header' ? (
+          block.type === 'map' ? (
+            // Tall wrapper + sticky inner: the WebGL map plane tracks the inner
+            // cell (pinned for the wrapper's extra height), and the map reads
+            // its scroll progress from the wrapper to draw the route.
+            <div key={bi} className="g-map-wrap">
+              <div ref={ref(block.flatIndex)} className="g-map" />
+            </div>
+          ) : block.type === 'header' ? (
             <div key={bi} ref={ref(block.flatIndex)} className="g-header" />
           ) : block.type === 'full' ? (
             <div key={bi} ref={ref(block.flatIndex)} className="g-full" />

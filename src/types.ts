@@ -23,6 +23,9 @@ export interface PhotoLayout {
 }
 
 export interface Photo {
+  /** Stable id (source filename, sans extension) — what a layout.json
+   *  references a photo by. */
+  id?: string
   src: ImageRef
   alt: string
   /** Which WebGL reveal to use as this photo scrolls into view. */
@@ -30,6 +33,24 @@ export interface Photo {
   /** Optional manual placement; otherwise the layout engine decides. */
   layout?: PhotoLayout
 }
+
+/** Hand-authored layout for a section — an optional `layout.json` dropped beside
+ *  the photos in a chapter folder. Each entry references photos by a substring
+ *  of their filename:
+ *    'DSCF1234'                  → a centered single
+ *    ['DSCF1', 'DSCF2', 'DSCF3'] → a row, side by side
+ *    { full: 'DSCF1234' }        → a full-bleed page
+ *    { hero: 'DSCF1234' }        → a large opener
+ *    { photo: 'DSCF1', place: 'left' | 'right' | 'center' | 'full' | 'hero' }
+ *  Photos not listed are appended afterwards via the automatic layout, so
+ *  nothing silently disappears while you're still arranging a chapter. */
+export type LayoutEntry =
+  | string
+  | string[]
+  | { full: string }
+  | { hero: string }
+  | { photo: string; place?: 'left' | 'right' | 'center' | 'full' | 'hero' }
+export type LayoutSpec = LayoutEntry[]
 
 export interface GalleryTheme {
   /** Background color (also drives the WebGL clear color). */
@@ -47,6 +68,33 @@ export interface GallerySection {
   label: string
   /** Index of the photo this header appears before (0 = top of the gallery). */
   before: number
+  /** Optional hand-authored layout for this section's photos (a layout.json
+   *  beside the photos); absent → the automatic magazine layout. */
+  layout?: LayoutSpec
+  /** Optional palette for this section — the page colors crossfade to it as
+   *  the section header scrolls toward its anchor. */
+  theme?: GalleryTheme
+}
+
+/** One stop on a trip gallery's route, in travel order. */
+export interface TripStop {
+  /** Matches the chapter folder name (sans numeric prefix), e.g. 'tokyo'. */
+  id: string
+  /** Header text for the chapter — e.g. the Japanese characters 東京. */
+  label: string
+  /** Small romaji/latin name shown next to the map marker. */
+  name: string
+  lon: number
+  lat: number
+  /** Which side of the marker the map label sits on (default 'right'). */
+  labelDir?: 'left' | 'right'
+  /** Section palette for this stop's chapter (see GallerySection.theme). */
+  theme?: GalleryTheme
+}
+
+/** Trip galleries open on a stylized, scroll-driven route map. */
+export interface Trip {
+  stops: TripStop[]
 }
 
 export interface Gallery {
@@ -57,6 +105,8 @@ export interface Gallery {
   date?: string
   /** Section headers between photo groups. If absent, the title heads the top. */
   sections?: GallerySection[]
+  /** Present on trip galleries — renders the route-map intro before chapter 1. */
+  trip?: Trip
   cover: ImageRef
   theme: GalleryTheme
   photos: Photo[]

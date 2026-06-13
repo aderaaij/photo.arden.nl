@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import vertexShader from '../shaders/header.vert'
@@ -32,6 +32,17 @@ export default function HeaderText({
   const planeW = width + pad * 2
   const planeH = height + pad * 2
 
+  // Re-rasterize once webfonts land — CJK labels (Shippori Mincho) would
+  // otherwise be stuck with the system fallback they mounted with.
+  const [fontsReady, setFontsReady] = useState(false)
+  useEffect(() => {
+    let on = true
+    document.fonts.ready.then(() => on && setFontsReady(true))
+    return () => {
+      on = false
+    }
+  }, [])
+
   const texture = useMemo(() => {
     // Scale the canvas up with the padding so glyph resolution doesn't drop.
     const cw = Math.min(2048, Math.round(1024 * (planeW / width)))
@@ -45,8 +56,9 @@ export default function HeaderText({
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
-    let fontSize = ch * 0.62 * (height / planeH)
-    const family = "900 {S}px 'Fraunces', Georgia, 'Times New Roman', serif"
+    let fontSize = ch * 0.78 * (height / planeH)
+    const family =
+      "900 {S}px 'Fraunces', 'Shippori Mincho B1', Georgia, 'Times New Roman', serif"
     ctx.font = family.replace('{S}', String(fontSize))
     const maxW = cw * 0.94 * (width / planeW)
     const measured = ctx.measureText(text).width
@@ -64,10 +76,14 @@ export default function HeaderText({
     tex.magFilter = THREE.LinearFilter
     tex.needsUpdate = true
     return tex
-  }, [text, width, height, planeW, planeH])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, width, height, planeW, planeH, fontsReady])
 
   useEffect(() => () => texture.dispose(), [texture])
 
+  // One stable uniforms object for the material's lifetime — three's renderer
+  // captures the object at compile time, so a swapped-in replacement (e.g. on
+  // font-ready re-rasterize) would silently never upload again. Mutate values.
   const uniforms = useMemo(
     () => ({
       uText: { value: texture },
@@ -81,8 +97,15 @@ export default function HeaderText({
       uFadeIn: { value: headerTuning.fadeIn },
       uDpr: { value: 1 },
     }),
-    [texture, color, planeW, planeH],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   )
+  useEffect(() => {
+    uniforms.uText.value = texture
+  }, [uniforms, texture])
+  useEffect(() => {
+    uniforms.uColor.value.set(color)
+  }, [uniforms, color])
 
   useFrame(() => {
     if (!mesh.current) return
